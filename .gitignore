@@ -1,4 +1,6 @@
+.gitignore
 mariela.webflow.io
 frontend.css  
-index.html  
-/shoppinglyx
+mariela.html
+shoppinglyx
+gitToken.txt
