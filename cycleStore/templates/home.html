@@ -7,12 +7,10 @@
     <title>Document</title>
   </head>
   <body>
-    Add Data
-    <br />{{msp}} <br />
-    {%for output in outputList%}
-    <p>
-      {{output}}
-    </p>
+    <h1 align="center">TESTING</h1>
+    <h2>{{sum}}</h2>
+    {%for product in productList%}
+    <h3>{{product.productID}}.{{product.name}}</h3>
     {%endfor%}
   </body>
 </html>

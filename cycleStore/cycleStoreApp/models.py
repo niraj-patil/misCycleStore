@@ -1,4 +1,5 @@
 from email.headerregistry import Address
+from subprocess import CompletedProcess
 from django.db import models
 
 GENDER=(
@@ -15,9 +16,14 @@ ORDER_STATUS=(
     )
 AGE_GROUP=(
     ('0 to 14','Below 14'),
-    ('15 to 26','15 to 24'),
+    ('15 to 23','15 to 23'),
     ('24 to 36','24 to 36'),
     ('36+','Above 36')
+)
+FINANCE=(
+    ('-','Debit'),
+    ('+','Credit'),
+    ('~','Values')
 )
 
 
@@ -30,8 +36,6 @@ class Product(models.Model):
     ID              = models.AutoField(primary_key=True)
     title           = models.CharField(max_length=120)
     description     = models.TextField()
-    price           = models.DecimalField(decimal_places=2, max_digits=20, default=4999)
-    quantity        = models.PositiveIntegerField(default=50)
     image           = models.ImageField(upload_to='static', null=True, blank=True)
     featured        = models.BooleanField(default=False)
     active          = models.BooleanField(default=True)
@@ -45,6 +49,8 @@ class UniqueProduct(models.Model):
     colour          =models.ForeignKey(Colour,on_delete=models.CASCADE)
     profitPerItem   =models.DecimalField(decimal_places=2, max_digits=20,default=1000)
     sales           =models.IntegerField(default=0)
+    price           =models.DecimalField(decimal_places=2, max_digits=20, default=4999)
+    quantity        =models.PositiveIntegerField(default=50)
     profit          =models.DecimalField(decimal_places=2, max_digits=20,default=0)
     
     def save(self, *args, **kwargs):
@@ -68,6 +74,7 @@ class Customer(models.Model):
     age             =models.CharField(max_length=8,choices=AGE_GROUP)
     gender          =models.CharField(max_length=1,choices=GENDER)
     email           =models.EmailField(max_length=50)
+    timestamp       =models.DateTimeField()   #models.DateTimeField(auto_now_add=True,auto_now=False)
     
 class Order(models.Model):
     ID              = models.AutoField(primary_key=True)
@@ -76,13 +83,20 @@ class Order(models.Model):
     shippingAddress = models.ForeignKey(Address,on_delete=models.DO_NOTHING)
     status          = models.CharField(max_length=15,choices=ORDER_STATUS)
     transactionID   = models.CharField(max_length=50)
-    timestamp       = models.DateTimeField(auto_now_add=True,auto_now=False)
+    timestamp       = models.DateTimeField()    #models.DateTimeField(auto_now_add=True,auto_now=False)
 
 
-class Cart(models.Model):
-    user        = models.ForeignKey(Customer, null=True, blank=True,on_delete=models.CASCADE)
-    products    = models.ManyToManyField(Product, blank=True)
-    subtotal    = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    total       = models.DecimalField(default=0.00, max_digits=100, decimal_places=2)
-    updated     = models.DateTimeField(auto_now=True)
-    timestamp   = models.DateTimeField(auto_now_add=True)
+class Employee(models.Model):
+    name            = models.CharField(max_length=20)
+    salary          = models.IntegerField()
+    paid            = models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        
+        super().save(*args, **kwargs)
+
+class Finances(models.Model):
+    id              = models.AutoField(primary_key=True)
+    description     = models.CharField(max_length=50)
+    amount          = models.IntegerField()
+    type            = models.CharField(max_length=1,choices=FINANCE)
+    completed       = models.BooleanField(default=False)
