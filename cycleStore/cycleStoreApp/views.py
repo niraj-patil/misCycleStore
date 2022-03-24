@@ -1,6 +1,6 @@
 from urllib import request
-from django.shortcuts import render
-
+from django.shortcuts import render, HttpResponseRedirect
+from .forms import FinanceForm
 from .reports import *
 
 def home(request):
@@ -9,9 +9,51 @@ def home(request):
 def test(request):
     #outputList=addData()
     #outputList=Customer.objects.values_list('timestamp', flat=True)
-    print(sm_report())
+    lo_report()
     outputList=[1,3]
     return render(request,'test.html',{'outputList':outputList})
+
+
+
+
+def fnaReport(request):
+    (profit,total,budgetString,healthString)=fm_report()
+    return render(request,'finance/freport.html',{'profit':profit,"total":total,"budgetString":budgetString,"healthString":healthString})
+
+def add_show(request):
+    if request.method=='POST':
+        fm=FinanceForm(request.POST)
+        if fm.is_valid():
+            nd=fm.cleaned_data['description']
+            nt=fm.cleaned_data['type']
+            na=fm.cleaned_data['amount']
+            nc=fm.cleaned_data['completed']
+            reg=Finances(description=nd,type=nt,amount=na,completed=nc)
+            reg.save()
+    else:
+        fm=FinanceForm()
+    fin=Finances.objects.all()
+
+    return render(request,'finance/addandshow.html',{'form':fm,'fin':fin})
+    
+def update_data(request,id):
+    if request.method=='POST':
+        pi=Finances.objects.get(pk=id)
+        fm=FinanceForm(request.POST,instance=pi)
+        if fm.is_valid():
+            fm.save()
+    else:
+        pi=Finances.objects.get(pk=id)
+        fm=FinanceForm(instance=pi)
+    return render(request,'finance/update.html',{'form':fm})
+
+def delete_data(request,id):
+    if request.method=='POST':
+        pi=Finances.objects.get(pk=id)
+        pi.delete()
+        return HttpResponseRedirect('/fna')
+
+
 
 def salesMartketingReport():
     ()=sales()

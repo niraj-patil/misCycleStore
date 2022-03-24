@@ -21,5 +21,10 @@ from cycleStoreApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home),
-    path('test',views.test)
+    path('test',views.test),
+    #path('fianance/',views.finance,name='finance'),
+    path('fna',views.fnaReport,name="fnaReport"),
+    path('addAndShow',views.add_show,name='addandshow'),
+    path('delete/<int:id>/',views.delete_data,name='deletedata'),
+    path('<int:id>/',views.update_data,name='updatedata'),
 ]

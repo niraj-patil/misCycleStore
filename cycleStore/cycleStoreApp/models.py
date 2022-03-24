@@ -26,7 +26,6 @@ FINANCE=(
     ('~','Values')
 )
 
-
 # Create your models here.
 class Colour(models.Model):
     colour          = models.CharField(max_length=20,primary_key=True)
@@ -93,6 +92,7 @@ class Employee(models.Model):
     def save(self, *args, **kwargs):
         
         super().save(*args, **kwargs)
+
 
 class Finances(models.Model):
     id              = models.AutoField(primary_key=True)
