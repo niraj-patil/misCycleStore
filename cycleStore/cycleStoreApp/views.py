@@ -9,12 +9,15 @@ def home(request):
 def test(request):
     #outputList=addData()
     #outputList=Customer.objects.values_list('timestamp', flat=True)
-    lo_report()
+    print(sm_report())
     outputList=[1,3]
     return render(request,'test.html',{'outputList':outputList})
 
 
-
+def loReport(request):
+    (productNames,currentStock,currentStockDays,getStockBy,lastMonthTrend,mostBuyersFrom,status)=lo_report_t1()
+    (ids,productNames2,addressList,postalCodes)=lo_report_t2()
+    return render(request,'logistics.html',{'productNames':productNames,'currentStock':currentStock,'currentStockDays':currentStockDays,'getStockBy':getStockBy,'lastMonthTrend':lastMonthTrend,'mostBuyersFrom':mostBuyersFrom,'status':status,'ids':ids,'productNames2':productNames2,'addressList':addressList,'postalCodes':postalCodes})
 
 def fnaReport(request):
     (profit,total,budgetString,healthString)=fm_report()

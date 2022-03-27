@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load static %}
+{% load getByID %}
+<head>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+</head>
+<body>
+    
+
+<div>
+    <!-- <input type="button" class="logout-btn" value="logout"> -->
+    <h2 style="text-align: center; color: aliceblue; font-family: Arial Black;">Logistic Report</h2>
+    
+    <table class=" logistics-table1"> 
+        
+        <tr>
+            <td>Sr No.</td>
+
+            <td>Product Name</td>
+
+            <td>Current Stock(Units)</td>
+        
+            <td>Current Stock(Days)</td>
+                       
+            <td>Get Stock By(Days)</td>
+                    
+            <td>Last Month Trend</td>
+            
+            <td>Most Buyers From</td>
+                        
+            <td>Status</td>
+            
+        </tr>
+        {%for i in productNames%}
+            <tr>
+                {% with k=forloop.counter0 %}
+                <td>{{forloop.counter}}</td>
+                <td>{{productNames|return_item:k}}</td>
+                <td>{{currentStock|return_item:k}}</td>
+                <td>{{currentStockDays|return_item:k}}</td>
+                <td>{{getStockBy|return_item:k}}</td>
+                <td>{{lastMonthTrend|return_item:k}}</td>
+                <td>{{mostBuyersFrom|return_item:k}}</td>
+                <td>{{status|return_item:k}}</td>
+            </tr>
+            {%endwith%}
+        {%endfor%}
+      
+        
+
+       
+        </table>
+</div>
+
+<h2 style="text-align: center; color: aliceblue; font-family: Arial Black;">Currently Being Shipped</h2>
+    <div>
+        
+        <table class="logistics-table2">
+            <tr>
+                <td>Sr.No.</td>
+
+                <td>Order Id</td>
+
+                <td>Product Name</td>
+                
+                <td>City</td>
+                           
+                <td>ZipCode</td>
+               
+            </tr>
+            {%for i in ids%}
+            <tr>
+                {% with k=forloop.counter0 %}
+                <td>{{forloop.counter}}</td>
+                <td>{{ids|return_item:k}}</td>
+                <td>{{productNames2|return_item:k}}</td>
+                <td>{{addressList|return_item:k}}</td>
+                <td>{{postalCodes|return_item:k}}</td>
+            </tr>
+            {%endwith%}
+        {%endfor%}
+        </table>
+    </div>
+</body>

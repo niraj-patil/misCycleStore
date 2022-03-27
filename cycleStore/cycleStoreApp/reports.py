@@ -1,6 +1,7 @@
 
 from ast import Starred
 from audioop import add
+from math import ceil
 from .models import *
 from datetime import datetime
 from calendar import monthrange
@@ -14,18 +15,7 @@ def median(items):
     #items.sort()                               Assumed we send sorted elements
     mid = len(items) // 2                       #Floor Division
     return (items[mid] + items[~mid]) / 2
-def mostSoldItemGeneral():
-    mostSoldProduct=Product.objects.all().order_by('sales')[0]
-    mostSoldProductTypes=UniqueProduct.objects.all().filter(product=mostSoldProduct).order_by('-sales')
-    return (mostSoldProduct,mostSoldProductTypes)
 
-def mostSoldItemDetailed():
-    mostSoldProductTypes=UniqueProduct.objects.all().order_by('-sales')[0]
-    return mostSoldProductTypes
-
-def mostProfitableItem():
-    sales=UniqueProduct.objects.values_list('sales',flat=True)
-    profitPerItem=UniqueProduct.objects.values_list('product',flat=True)
 
 def mostBusyDay(timeStamps):
     days=[]
@@ -80,7 +70,10 @@ def sm_report(startDate=datetime(2000,1,1),endDate=datetime.now()):
     newCustomerCity=list(Address.objects.filter(id__in=newCustomerAddressIDs).values_list('city',flat=True))
     newCustomerPincode=list(Address.objects.filter(id__in=newCustomerAddressIDs).values_list('postal_code',flat=True))
     (overallProfit,individualProfitList,individualUniqueProfitList)=getProfit(startDate,endDate)
-    print(individualProfitList)
+    mostProfitableProduct=Product.objects.get(ID=individualProfitList.index(max(individualProfitList))+1)
+    mostProfitableProduct=mostProfitableProduct.title
+    mostProfitableProductUnique=UniqueProduct.objects.get(id=individualProfitList.index(max(individualProfitList))+1)
+    mostProfitableProductUnique=mostProfitableProductUnique.product.title+":"+mostProfitableProductUnique.colour.colour+":"+mostProfitableProductUnique.type.type
     _numberOfSales=sales(orderList)
     _mostBusyDay=mostBusyDay(timeStamps)
     _mostBusyTime=mostBusyTime(timeStamps)
@@ -93,7 +86,7 @@ def sm_report(startDate=datetime(2000,1,1),endDate=datetime.now()):
     _modalNewCustomerGender=mode(newCustomerGender)
     _modalNewCustomerCity=mode(newCustomerCity)
     _modalNewCustomerPinCode=mode(newCustomerPincode)
-    return (_numberOfSales,_mostBusyDay,_mostBusyTime,_mostBusyDate,_modalBuyerAge,_modalBuyerGender,_modalBuyerCity,_modalBuyerPinCode,_modalNewCustomerAge,_modalNewCustomerGender,_modalNewCustomerCity,_modalNewCustomerPinCode)
+    return (_numberOfSales,overallProfit,mostProfitableProduct,mostProfitableProductUnique,_mostBusyDay,_mostBusyTime,_mostBusyDate,_modalBuyerAge,_modalBuyerGender,_modalBuyerCity,_modalBuyerPinCode,_modalNewCustomerAge,_modalNewCustomerGender,_modalNewCustomerCity,_modalNewCustomerPinCode)
 
 def sm_dailyReport(date=datetime.now()):
     return sm_report(date,date)
@@ -157,60 +150,99 @@ def fm_report():
 
 
 def lo_report_t1():
-    orders=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())))
     inProcessing=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(status='processing'))
-    inShipping=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(status__in=['shipped','shipment']))
-    individualRequirement=[0]*UniqueProduct.objects.all().count()
-    individualRequirement=[0]*UniqueProduct.objects.all().count()
-    mostBuyersFrom=[0]*UniqueProduct.objects.all().count()
-    stockLeft=[0]*UniqueProduct.objects.all().count()
-    for order in inProcessing:
-        product=order.product.id
-        individualRequirement[product-1]+=1
-    for i in range(UniqueProduct.objects.all().count()):
-        address=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(product=UniqueProduct.objects.get(id=i+1)).values_list('shippingAddress',flat=True))
-        print(address)
-        city=[Address.objects.get(id=x).city for x in address]
-        if(len(city)!=0):
-            mostBuyersFrom[i]=mode(city)
-        else:
-            mostBuyersFrom[i]=0
-        lastMonthTrend=[0]*UniqueProduct.objects.all().count()
-    currentStock=list(UniqueProduct.objects.all().values_list('quantity',flat=True))
-    
-    print(mostBuyersFrom)
-    return inProcessing
 
-def lo_report_t1():
-    inShipping=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(status__in=['shipped','shipment']))
-    individualRequirement=[0]*UniqueProduct.objects.all().count()
-    individualRequirement=[0]*UniqueProduct.objects.all().count()
-    mostBuyersFrom=[0]*UniqueProduct.objects.all().count()
-    stockLeft=[0]*UniqueProduct.objects.all().count()
+    numberOfUniqueProducts=UniqueProduct.objects.all().count()
+    productNames=[] #
+    currentStock=list(UniqueProduct.objects.all().values_list('quantity',flat=True)) #
+    currentStockDays=[0]*numberOfUniqueProducts 
+    currentRequirement=[0]*numberOfUniqueProducts #
+    getStockBy=[0]*numberOfUniqueProducts
+    recommendedManufacturingSpeed=[0]*numberOfUniqueProducts
+    mostBuyersFrom=[0]*numberOfUniqueProducts
+    status=[0]*numberOfUniqueProducts
+   
+    lastMonthTrend=[0]*numberOfUniqueProducts
+    averagePerDayRequirement=[0]*numberOfUniqueProducts
+
+    #productNames
+    for _product in list(UniqueProduct.objects.all()):
+        name=_product.product.title+":"+_product.type.type+":"+_product.colour.colour
+        productNames.append(name)
+
+    #currentRequirement
     for order in inProcessing:
         product=order.product.id
-        individualRequirement[product-1]+=1
-    for i in range(UniqueProduct.objects.all().count()):
-        address=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(product=UniqueProduct.objects.get(id=i+1)).values_list('shippingAddress',flat=True))
-        print(address)
-        city=[Address.objects.get(id=x).city for x in address]
+        currentRequirement[product-1]+=1
+    
+    #last month trend & currentStockDays
+    if(datetime.now().month==1):
+        mn= 12  
+        yr= datetime.now().year-1
+    else: 
+        mn= datetime.now().month-1
+        yr= datetime.now().year
+    for i in range(numberOfUniqueProducts):
+        _ordersLM=Order.objects.all().filter(timestamp__date__range=(datetime(yr,mn,1),datetime(yr,mn,monthrange(yr,mn)[1]))).filter(product=UniqueProduct.objects.get(id=i+1))
+        for _order in _ordersLM:
+            product=_order.product.id
+            lastMonthTrend[product-1]+=1
+            averagePerDayRequirement[product-1]=lastMonthTrend[product-1]/30
+            currentStockDays[product-1]=ceil(currentStock[product-1]/averagePerDayRequirement[product-1])
+
+
+    #city
+    for i in range(numberOfUniqueProducts):
+        _orders=Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(product=UniqueProduct.objects.get(id=i+1))
+        city=[x.shippingAddress.city for x in _orders]
         if(len(city)!=0):
             mostBuyersFrom[i]=mode(city)
         else:
-            mostBuyersFrom[i]=0
-        lastMonthTrend=[0]*UniqueProduct.objects.all().count()
-    currentStock=list(UniqueProduct.objects.all().values_list('quantity',flat=True))
+            mostBuyersFrom[i]="-"
+
+    #status
+    for i in range(numberOfUniqueProducts):
+        if(currentStockDays[i]>lastMonthTrend[i]+10):
+            status[i]="Overstocked"
+            getStockBy[i]="-"
+            recommendedManufacturingSpeed[i]="-"
+        elif(currentStockDays[i]<lastMonthTrend[i]-3):
+            status[i]="Understocked"
+            if(currentStockDays[i]-7<0):
+                getStockBy[i]="ASAP"
+            else:
+                getStockBy[i]=str(currentStockDays-7)+" Days"
+        else:
+            status[i]="Optimal"
+        
+        if(currentStock[i]<currentRequirement[i]):
+            getStockBy[i]="Immidiately"
+
+
     
-    print(mostBuyersFrom)
-    return inProcessing
+    return (productNames,currentStock,currentStockDays,getStockBy,lastMonthTrend,mostBuyersFrom,status)
+
+def lo_report_t2():
+    inShipping=list(Order.objects.all().filter(timestamp__date__range=(datetime(datetime.now().year,datetime.now().month,1),datetime.now())).filter(status__in=['shipped','shipment']))
+    ids=[]
+    productNames=[]
+    addressList=[]
+    postalCodes=[]
+    for order in inShipping:
+        id=order.ID
+        name=order.product.product.title+":"+order.product.type.type+":"+order.product.colour.colour
+        address=order.shippingAddress.city
+        code=order.shippingAddress.postal_code
+        ids.append(id)
+        productNames.append(name)
+        addressList.append(address)
+        postalCodes.append(code)
+    return (ids,productNames,addressList,postalCodes)
 
 
     """
     how many orders currently in processing
-        do we have stock
-    where are most orders being shipped to
-        mode(city) - mode(pin)      : Currently
-        mode(city) - mode(pin)      : Overall
+       
 
     if inventory-len(salesPastMonth)> someValue:
         overstocked
