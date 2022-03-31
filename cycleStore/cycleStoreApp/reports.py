@@ -1,6 +1,4 @@
 
-from ast import Starred
-from audioop import add
 from math import ceil
 from .models import *
 from datetime import datetime
@@ -10,6 +8,8 @@ from django.db.models import Sum
 
 #TODO: Genralize Functions. Set Default Dates to RandomOldestDate and timestamp.now()
 def mode(items):
+    if(len(items)==0):
+        return 0
     return max(set(items), key = items.count)
 def median(items):
     #items.sort()                               Assumed we send sorted elements
@@ -90,63 +90,61 @@ def sm_report(startDate=datetime(2000,1,1),endDate=datetime.now()):
 
 def sm_dailyReport(date=datetime.now()):
     return sm_report(date,date)
-def sm_monthlyReport(month,year):
+def sm_monthlyReport(month=datetime.now().month,year=datetime.now().year):
     return sm_report(datetime(year, month, 1),datetime(year, month, monthrange(year,month)[1]))
-def sm_annualReport(year):
+def sm_annualReport(year=datetime.now().year):
     return sm_report(datetime(year, 1, 1),datetime(year, 12, 31))
 
-def sm_product(productList,colourList,typeList,startDate=datetime(2000,1,1),endDate=datetime.now()):
-    pass
-def sm_productDailyReport(productList,colourList,typeList):
-    return sm_report(productList,colourList,typeList,datetime.now(),datetime.now())
-def sm_productMonthlyReport(productList,colourList,typeList,month,year):
-    return sm_report(productList,colourList,typeList,datetime(year, month, 1),datetime(year, month, 31))
-def sm_productAnnualReport(productList,colourList,typeList,year):
-    return sm_report(productList,colourList,typeList,datetime(year, 1, 1),datetime(year, 12, 31))
+# def sm_product(productList,colourList,typeList,startDate=datetime(2000,1,1),endDate=datetime.now()):
+#     pass
+# def sm_productDailyReport(productList,colourList,typeList):
+#     return sm_report(productList,colourList,typeList,datetime.now(),datetime.now())
+# def sm_productMonthlyReport(productList,colourList,typeList,month,year):
+#     return sm_report(productList,colourList,typeList,datetime(year, month, 1),datetime(year, month, 31))
+# def sm_productAnnualReport(productList,colourList,typeList,year):
+#     return sm_report(productList,colourList,typeList,datetime(year, 1, 1),datetime(year, 12, 31))
 
 
 
 
 def fm_report():
-    unpaidEmployees=list(Employee.objects.filter(paid=False).values_list("salary",flat=True))
-    # debits=list(Finances.objects.filter(type='-',completed=True).values_list('amount',flat=True))
-    credit=sum(list(Finances.objects.filter(type='+',completed=True).values_list('amount',flat=True)))
-    # finances=sum(credits)-sum(debits)
-
     target=Finances.objects.filter(description='target').aggregate(Sum('amount'))['amount__sum']
     budget=Finances.objects.filter(description='budget').aggregate(Sum('amount'))['amount__sum']
-    finances=list(Finances.objects.filter(type__in=['+','-'],completed=True).values_list('amount',flat=True))
+    debits=sum(list(Finances.objects.filter(type='-').values_list('amount',flat=True)))
+    credits=sum(list(Finances.objects.filter(type='+').values_list('amount',flat=True)))
     (profit,x,y)=getProfit(datetime(datetime.now().year,datetime.now().month,1),datetime.now())
-    total=profit+sum(finances)-sum(unpaidEmployees)
+    total=debits-credits
+    print(total)
     dailyNeed=target/monthrange(datetime.now().year,datetime.now().month)[1]
     budgetString=""
+    
     currentNeed=dailyNeed*datetime.now().day
-    total=float(total)
     currentNeed=float(currentNeed)
-    health=str(int(total-currentNeed))
-    if total>target:
+    profit=int(profit)
+    health=str(int(profit-currentNeed))
+    if profit>target:
         healthString="Target Reached.Surplus="+health
-    elif total>currentNeed+10*dailyNeed:
+    elif profit>currentNeed+10*dailyNeed:
         healthString="Great. Target in Sight. Surplus="+health
-    elif total>currentNeed+5*dailyNeed:
+    elif profit>currentNeed+5*dailyNeed:
         healthString="Good. Target can be easily reached at this pace. Surplus="+health
-    elif total>=currentNeed:
+    elif profit>=currentNeed:
         healthString="OK. On Track. Surplus="+health
-    elif total<currentNeed+5*dailyNeed:
+    elif profit<currentNeed+5*dailyNeed:
         healthString="Bad. Need to Catch Up with the Daily Quota. Deficiet="+health
     else:
         healthString="Dier. Need to take Drastic Steps. Deficiet="+health
 
     dailySpent=budget/monthrange(datetime.now().year,datetime.now().month)[1]
     currentSpent=dailySpent*datetime.now().day
-    budgetHealth=str(int(currentSpent-credit))
-    if currentSpent>credit+credit*0.25:
+    budgetHealth=str(int(currentSpent-total))
+    if currentSpent>total+total*0.25:
         budgetString="Under The Budget. Surplus="+budgetHealth
-    elif currentSpent>=credit:
+    elif currentSpent>=total:
         budgetString="On Budget. Surplus="+budgetHealth
-    elif currentSpent<credit:
+    elif currentSpent<total:
         budgetString="Over Spending. Deficiet="+budgetHealth
-    return(profit,total,budgetString,healthString)
+    return(budget,target,debits,credits,profit,total,budgetString,healthString)
 
 
 def lo_report_t1():
@@ -157,8 +155,7 @@ def lo_report_t1():
     currentStock=list(UniqueProduct.objects.all().values_list('quantity',flat=True)) #
     currentStockDays=[0]*numberOfUniqueProducts 
     currentRequirement=[0]*numberOfUniqueProducts #
-    getStockBy=[0]*numberOfUniqueProducts
-    recommendedManufacturingSpeed=[0]*numberOfUniqueProducts
+    getStockBy=["-"]*numberOfUniqueProducts
     mostBuyersFrom=[0]*numberOfUniqueProducts
     status=[0]*numberOfUniqueProducts
    
@@ -202,16 +199,15 @@ def lo_report_t1():
 
     #status
     for i in range(numberOfUniqueProducts):
-        if(currentStockDays[i]>lastMonthTrend[i]+10):
+        if(currentStock[i]>lastMonthTrend[i]+10):
             status[i]="Overstocked"
             getStockBy[i]="-"
-            recommendedManufacturingSpeed[i]="-"
-        elif(currentStockDays[i]<lastMonthTrend[i]-3):
+        elif(currentStock[i]<lastMonthTrend[i]-3):
             status[i]="Understocked"
             if(currentStockDays[i]-7<0):
-                getStockBy[i]="ASAP"
+                getStockBy[i]="Immidiately"
             else:
-                getStockBy[i]=str(currentStockDays-7)+" Days"
+                getStockBy[i]=str(currentStockDays[i]-7)+" Days"
         else:
             status[i]="Optimal"
         

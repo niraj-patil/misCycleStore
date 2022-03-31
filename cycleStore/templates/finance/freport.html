@@ -2,11 +2,47 @@
 {% block content %} 
 <div class="row">
     <div class="col-sm-12">
+        
         <h4 class="text-center alert alert-info">Report</h4> 
-        {{profit}} <br>
-        {{total}}   <br>
-        {{budgetString}} <br>
-        {{healthString}}
+        
+    <table class="table table-success">
+        
+          <tr>
+            <th>Budget</th>
+            <td>{{budget}}</td>
+          </tr>
+          <tr>
+            <th>Target</th>
+            <td>{{target}}</td>
+          </tr>
+          <tr>
+            <th>Spending</th>
+            <td>{{credits}}</td>
+          </tr>
+          <tr>
+            <th>Debits</th>
+            <td>{{debits}}</td>
+          </tr>
+          <tr>
+            <th>Profit</th>
+            <td>{{profit}}</td>
+          </tr>
+          <tr>
+            <th>Net Spending</th>
+            <td>{{total}}</td>
+          </tr>
+          <tr>
+          </table>
+          <table class="table table-success">
+            <th>Budget Health</th>
+            <td>{{budgetString}}</td>
+          </tr>
+          <tr>
+            <th>Target Health</th>
+            <td>{{healthString}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 </div>
 {% endblock content %}

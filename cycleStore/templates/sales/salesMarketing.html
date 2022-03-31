@@ -1,0 +1,380 @@
+{% extends 'sales/base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<head>
+<title>
+    SALES & MARKETING
+</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+
+        <div>
+                <h3 class="text-center alert alert-info">OVERALL SALES</h3>
+
+        <table class="table table-success"> 
+        <tr>
+            <td>OVERALL SALES</td>
+            <td>{{numberOfSales}}</td>
+        </tr>
+        <tr>
+            <td>OVERALL PROFIT</td>
+            <td>{{overallProfit}}</td>
+        </tr>
+
+        <tr>
+            <td>MOST PROFITABLE UNIQUE PRODUCT </td>
+            <td>{{mostProfitableProductUnique}}</td>
+        </tr>
+
+        <tr>
+            <td>MOST PROFITABLE PRODUCT</td>
+            <td>{{mostProfitableProduct}}</td>
+        </tr>
+        <tr>
+            <td>MODAL AGE</td>
+            <td>{{modalBuyerAge}}</td>
+        </tr>
+
+        <tr>
+            
+            
+            <td>MODAL BUYER GENDER</td>
+            <td>{{modalBuyerGender}}</td>
+        </tr>
+
+        <tr>
+            
+            <td>MODAL ADDRESS</td>
+            <td>{{modalBuyerCity}} {{modalBuyerPinCode}}</td>
+        </tr>
+
+        <tr>
+            
+            <td>MOST BUSY DAY</td>
+            <td>{{mostBusyDay}}</td>
+        </tr>
+
+        <tr>
+            
+            <td>MOST BUSY DATE</td>
+            <td>{{mostBusyDate}}</td>
+        </tr>
+        <tr>
+            
+            <td>MOST BUSY TIME</td>
+            <td>{{mostBusyTime}}</td>
+        </tr>
+        </table>
+<!--NEW CUSTOMER-->
+        <table class="table table-warning"> 
+            <tr>
+                
+                <td>MODEL NEW CUSTOMER AGE</td>
+                <td>{{modalNewCustomerAge}}</td>
+            </tr>
+            <tr>
+                
+                <td>MODEL NEW CUSTOMER GENDER</td>
+                <td>{{modalNewCustomerGender}}</td>
+            </tr>
+            <tr>
+                
+                <td>MODEL NEW CUSTOMER CITY</td>
+                <td>{{modalNewCustomerCity}}</td>
+            </tr>
+            <tr>
+                
+                <td>MODEL NEW CUSTOMER PINCODE</td>
+                <td>{{modalNewCustomerPinCode}}</td>
+            </tr>
+            
+        </table>
+
+<!---DAILY--------------------------------------------------------------------------------->
+<h3 class="text-center alert alert-info">DAILY SALES</h3>
+
+<table class="table table-success"> 
+    <tr>
+        <td>OVERALL SALES</td>
+        <td>{{dnumberOfSales}}</td>
+    </tr>
+    <tr>
+        <td>OVERALL PROFIT</td>
+        <td>{{doverallProfit}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE UNIQUE PRODUCT </td>
+        <td>{{dmostProfitableProductUnique}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE PRODUCT</td>
+        <td>{{dmostProfitableProduct}}</td>
+    </tr>
+    <tr>
+        <td>MODAL AGE</td>
+        <td>{{dmodalBuyerAge}}</td>
+    </tr>
+
+    <tr>
+        
+        
+        <td>MODAL BUYER GENDER</td>
+        <td>{{dmodalBuyerGender}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MODAL ADDRESS</td>
+        <td>{{dmodalBuyerCity}} {{dmodalBuyerPinCode}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DAY</td>
+        <td>{{dmostBusyDay}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DATE</td>
+        <td>{{dmostBusyDate}}</td>
+    </tr>
+    <tr>
+        
+        <td>MOST BUSY TIME</td>
+        <td>{{dmostBusyTime}}</td>
+    </tr>
+    </table>
+       <!--NEW CUSTOMER-->
+
+    <table class="table table-warning"> 
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER AGE</td>
+            <td>{{dmodalNewCustomerAge}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER GENDER</td>
+            <td>{{dmodalNewCustomerGender}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER CITY</td>
+            <td>{{dmodalNewCustomerCity}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER PINCODE</td>
+            <td>{{dmodalNewCustomerPinCode}}</td>
+        </tr>
+        
+    </table>
+
+    <h3 class="text-center alert alert-info">MONTHLY SALES</h3>
+<table class="table table-success"> 
+    <tr>
+        <td>OVERALL SALES</td>
+        <td>{{mnumberOfSales}}</td>
+    </tr>
+    <tr>
+        <td>OVERALL PROFIT</td>
+        <td>{{moverallProfit}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE UNIQUE PRODUCT </td>
+        <td>{{mmostProfitableProductUnique}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE PRODUCT</td>
+        <td>{{mmostProfitableProduct}}</td>
+    </tr>
+    <tr>
+        <td>MODAL AGE</td>
+        <td>{{mmodalBuyerAge}}</td>
+    </tr>
+
+    <tr>
+        
+        
+        <td>MODAL BUYER GENDER</td>
+        <td>{{mmodalBuyerGender}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MODAL ADDRESS</td>
+        <td>{{mmodalBuyerCity}} {{mmodalBuyerPinCode}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DAY</td>
+        <td>{{mmostBusyDay}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DATE</td>
+        <td>{{mmostBusyDate}}</td>
+    </tr>
+    <tr>
+        
+        <td>MOST BUSY TIME</td>
+        <td>{{mmostBusyTime}}</td>
+    </tr>
+    </table>
+       <!--NEW CUSTOMER-->
+
+    <table class="table table-warning"> 
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER AGE</td>
+            <td>{{mmodalNewCustomerAge}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER GENDER</td>
+            <td>{{mmodalNewCustomerGender}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER CITY</td>
+            <td>{{mmodalNewCustomerCity}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER PINCODE</td>
+            <td>{{mmodalNewCustomerPinCode}}</td>
+        </tr>
+        
+    </table>
+
+    <h3 class="text-center alert alert-info">ANNUAL SALES</h3>
+<table class="table table-success"> 
+    <tr>
+        <td>OVERALL SALES</td>
+        <td>{{ynumberOfSales}}</td>
+    </tr>
+    <tr>
+        <td>OVERALL PROFIT</td>
+        <td>{{yoverallProfit}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE UNIQUE PRODUCT </td>
+        <td>{{ymostProfitableProductUnique}}</td>
+    </tr>
+
+    <tr>
+        <td>MOST PROFITABLE PRODUCT</td>
+        <td>{{ymostProfitableProduct}}</td>
+    </tr>
+    <tr>
+        <td>MODAL AGE</td>
+        <td>{{ymodalBuyerAge}}</td>
+    </tr>
+
+    <tr>
+        
+        
+        <td>MODAL BUYER GENDER</td>
+        <td>{{ymodalBuyerGender}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MODAL ADDRESS</td>
+        <td>{{ymodalBuyerCity}} {{ymodalBuyerPinCode}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DAY</td>
+        <td>{{ymostBusyDay}}</td>
+    </tr>
+
+    <tr>
+        
+        <td>MOST BUSY DATE</td>
+        <td>{{ymostBusyDate}}</td>
+    </tr>
+    <tr>
+        
+        <td>MOST BUSY TIME</td>
+        <td>{{ymostBusyTime}}</td>
+    </tr>
+    </table>
+       <!--NEW CUSTOMER-->
+
+    <table class="table table-warning"> 
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER AGE</td>
+            <td>{{ymodalNewCustomerAge}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER GENDER</td>
+            <td>{{ymodalNewCustomerGender}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER CITY</td>
+            <td>{{ymodalNewCustomerCity}}</td>
+        </tr>
+        <tr>
+            
+            <td>MODEL NEW CUSTOMER PINCODE</td>
+            <td>{{ymodalNewCustomerPinCode}}</td>
+        </tr>
+        
+    </table>
+    </div>
+</body>
+</html>
+
+<script>
+    var datetypeObject = {
+      "YEARLY": {
+        "2015": [""],"2016": [""],"2017": [""],"2018": [""],"2019": [""],"2020": [""],"2021": [""],"2022": [""]       
+      },
+      
+      "DAILY":{
+          "1":[""],"2":[""],"3":[""],"4":[""],"5":[""],"6":[""],"7":[""],"8":[""],"9":[""],"10":[""],
+          "11":[""],"12":[""],"13":[""],"14":[""],"15":[""],"16":[""],"17":[""],"18":[""],"19":[""],"20":[""],
+          "21":[""],"22":[""],"23":[""],"24":[""],"25":[""],"26":[""],"27":[""],"28":[""],"29":[""],"30":[""],
+          "31":[""],
+      }
+    }
+    window.onload = function() {
+      var dateSEL = document.getElementById("datetype");
+      var ddl1SEL = document.getElementById("ddl1");
+      var ddl2SEL = document.getElementById("ddl2");
+      for (var x in datetypeObject) {
+        dateSEL.options[dateSEL.options.length] = new Option(x, x);
+      }
+      dateSEL.onchange = function() {
+    //empty Chapters- and Topics- dropdowns
+       
+        ddl2SEL.length = 1;
+        ddl1SEL.length = 1;
+        //display correct values
+        for (var y in datetypeObject[this.value]) {
+          ddl1SEL.options[ddl1SEL.options.length] = new Option(y, y);
+          ddl2SEL.options[ddl2SEL.options.length] = new Option(y, y);
+        }
+      }
+      
+    }
+    </script>
+
+<!--month-->
+
+{% endblock content %}

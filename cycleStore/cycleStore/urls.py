@@ -23,9 +23,11 @@ urlpatterns = [
     path('', views.home),
     path('test',views.test),
     #path('fianance/',views.finance,name='finance'),
-    path('fna',views.fnaReport,name="fnaReport"),
-    path('addAndShow',views.add_show,name='addandshow'),
+    path('fna/',views.fnaReport,name="Finance and Accounting Report"),
+    path('addAndShow/',views.add_show,name='addandshow'),
     path('delete/<int:id>/',views.delete_data,name='deletedata'),
     path('<int:id>/',views.update_data,name='updatedata'),
-    path('logi/',views.loReport,name="Logistic Report")
+    path('logi/',views.loReport,name="Logistic Report"),
+    path('dash/',views.dashboard,name="Dashboard"),
+    path('snm/',views.salesMartketingReport,name="Sales and Marketing Report"),
 ]
